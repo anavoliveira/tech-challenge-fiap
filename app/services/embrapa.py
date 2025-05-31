@@ -59,7 +59,10 @@ def extrair_tabela_produto(opt: str, ano: int):
 
     registros, df = get_table(opt=opt, ano=ano)
 
-    resultado = []
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
     grupo_atual = None
 
     for item in registros:
@@ -72,23 +75,30 @@ def extrair_tabela_produto(opt: str, ano: int):
               "Quantidade (L.)": quantidade,
               "Subprodutos": [],
           }
-          resultado.append(grupo_atual)
+          resultado["dados"].append(grupo_atual)
       elif produto.lower() == "total":
-          continue
+        grupo_atual = {
+          "Quantidade (L.)": quantidade
+        }
+        resultado["total"] = grupo_atual
       else:
           if grupo_atual:
               grupo_atual["Subprodutos"].append(
                   {"Produto": produto, "Quantidade (L.)": quantidade}
               )
           else:
-              resultado.append({"Produto": produto, "Quantidade (L.)": quantidade})
+              resultado["dados"].append({"Produto": produto, "Quantidade (L.)": quantidade})
     return resultado
 
 
 def extrair_tabela_cultivo(opt: str, ano: int):
     registros, df = get_table(opt=opt, ano=ano)
 
-    resultado = []
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
+
     grupo_atual = None
 
     for item in registros:
@@ -101,34 +111,48 @@ def extrair_tabela_cultivo(opt: str, ano: int):
               "Quantidade (L.)": quantidade,
               "Subprodutos": [],
           }
-          resultado.append(grupo_atual)
+          resultado["dados"].append(grupo_atual)
       elif produto.lower() == "total":
-          continue
+        grupo_atual = {
+          "Quantidade (L.)": quantidade
+        }
+        resultado["total"] = grupo_atual
       else:
           if grupo_atual:
               grupo_atual["Subprodutos"].append(
                   {"Produto": produto, "Quantidade (L.)": quantidade}
               )
           else:
-              resultado.append({"Produto": produto, "Quantidade (L.)": quantidade})
+              resultado["dados"].append({"Produto": produto, "Quantidade (L.)": quantidade})
     return resultado
 
 
 def extrair_tabela_venda(opt: str, ano: int):
     registros, df = get_table(opt=opt, ano=ano)
 
-    resultado = []
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
+
     grupo_atual = None
 
     for item in registros:
       pais = item["Países"]
       quantidade = check_none(item[df.columns[1]])
       valor = check_none(item[df.columns[2]])
-      grupo_atual = {
-          "País": pais,
+      if pais.lower() != "total":
+        grupo_atual = {
+            "País": pais,
+            "Quantidade (L.)": quantidade,
+            "Valor": valor,
+        }
+        resultado["dados"].append(grupo_atual)
+      else:
+        grupo_atual = {
           "Quantidade (L.)": quantidade,
           "Valor": valor,
-      }
-      resultado.append(grupo_atual)
+        }
+        resultado["total"] = grupo_atual
       
     return resultado
