@@ -1,18 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import math
+
+def get_content(opt: str, ano:int):
+  url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao={opt}"
+  response = requests.get(url)
+
+  if response.status_code == 200:
+      html_content = response.text
+  else:
+      print(f"Erro ao acessar a página. Código de status: {response.status_code} ")
+      raise Exception
+      
+  return html_content
 
 
-def extrair_tabela(opt: str, ano: int):
-    url = f"http://vitibrasil.cnpuv.embrapa.br/index.php?ano={ano}&opcao={opt}"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        html_content = response.text
-    else:
-        print(f"Erro ao acessar a página. Código de status: {response.status_code} ")
-        return
-
+def get_table(opt: str, ano:int):
+    
+    html_content = get_content(opt=opt, ano=ano)
     soup = BeautifulSoup(html_content, "html.parser")
     table = soup.find("table", {"class": "tb_base tb_dados"})
 
@@ -39,34 +45,114 @@ def extrair_tabela(opt: str, ano: int):
         df[col] = df[col].str.replace(",", ".", regex=False)
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    registros = df.to_dict(orient="records")
+    return df.to_dict(orient="records"), df
 
-    resultado = []
+
+def check_none(value):
+  # substitui NaN por None
+  if isinstance(value, float) and math.isnan(value):
+      value = None
+  return value
+
+
+def extrair_tabela_produto(opt: str, ano: int):
+
+    registros, df = get_table(opt=opt, ano=ano)
+
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
     grupo_atual = None
 
     for item in registros:
-        produto = item["Produto"]
-        quantidade = item[df.columns[1]]
+      produto = item["Produto"]
+      quantidade = check_none(item[df.columns[1]])
 
-        if produto.isupper() and not produto.startswith("TOTAL"):
-            grupo_atual = {
-                "Produto": produto,
-                "Quantidade (L.)": quantidade,
-                "Subprodutos": [],
-            }
-            resultado.append(grupo_atual)
-        elif produto.lower() == "total":
-            continue
-        else:
-            if grupo_atual:
-                grupo_atual["Subprodutos"].append(
-                    {"Produto": produto, "Quantidade (L.)": quantidade}
-                )
-            else:
-                resultado.append({"Produto": produto, "Quantidade (L.)": quantidade})
-
+      if produto.isupper() and not produto.startswith("TOTAL"):
+          grupo_atual = {
+              "Produto": produto,
+              "Quantidade (L.)": quantidade,
+              "Subprodutos": [],
+          }
+          resultado["dados"].append(grupo_atual)
+      elif produto.lower() == "total":
+        grupo_atual = {
+          "Quantidade (L.)": quantidade
+        }
+        resultado["total"] = grupo_atual
+      else:
+          if grupo_atual:
+              grupo_atual["Subprodutos"].append(
+                  {"Produto": produto, "Quantidade (L.)": quantidade}
+              )
+          else:
+              resultado["dados"].append({"Produto": produto, "Quantidade (L.)": quantidade})
     return resultado
 
 
-if __name__ == "__main__":
-    print(extrair_tabela("opt_02", "2022"))
+def extrair_tabela_cultivo(opt: str, ano: int):
+    registros, df = get_table(opt=opt, ano=ano)
+
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
+
+    grupo_atual = None
+
+    for item in registros:
+      produto = item["Cultivar"]
+      quantidade = check_none(item[df.columns[1]])
+
+      if produto.isupper() and not produto.startswith("TOTAL"):
+          grupo_atual = {
+              "Produto": produto,
+              "Quantidade (L.)": quantidade,
+              "Subprodutos": [],
+          }
+          resultado["dados"].append(grupo_atual)
+      elif produto.lower() == "total":
+        grupo_atual = {
+          "Quantidade (L.)": quantidade
+        }
+        resultado["total"] = grupo_atual
+      else:
+          if grupo_atual:
+              grupo_atual["Subprodutos"].append(
+                  {"Produto": produto, "Quantidade (L.)": quantidade}
+              )
+          else:
+              resultado["dados"].append({"Produto": produto, "Quantidade (L.)": quantidade})
+    return resultado
+
+
+def extrair_tabela_venda(opt: str, ano: int):
+    registros, df = get_table(opt=opt, ano=ano)
+
+    resultado = {
+      "dados": [],
+      "total": {}
+    }
+
+    grupo_atual = None
+
+    for item in registros:
+      pais = item["Países"]
+      quantidade = check_none(item[df.columns[1]])
+      valor = check_none(item[df.columns[2]])
+      if pais.lower() != "total":
+        grupo_atual = {
+            "País": pais,
+            "Quantidade (L.)": quantidade,
+            "Valor": valor,
+        }
+        resultado["dados"].append(grupo_atual)
+      else:
+        grupo_atual = {
+          "Quantidade (L.)": quantidade,
+          "Valor": valor,
+        }
+        resultado["total"] = grupo_atual
+      
+    return resultado

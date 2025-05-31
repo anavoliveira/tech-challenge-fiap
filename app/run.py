@@ -1,9 +1,8 @@
 from flask import Flask, jsonify, request
-from services.embrapa import extrair_tabela
+from services.embrapa import extrair_tabela_produto
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger
 
-users = {"user1": "password1", "user2": "password2"}
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -14,11 +13,6 @@ swagger_template = {"securityDefinitions": {"basicAuth": {"type": "basic"}}}
 
 swagger = Swagger(app, template=swagger_template)
 
-
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and users[username] == password:
-        return username
 
 
 @app.route("/")
