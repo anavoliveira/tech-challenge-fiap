@@ -3,26 +3,14 @@ from services.embrapa import extrair_tabela
 from flask_httpauth import HTTPBasicAuth
 from flasgger import Swagger
 
-users = {
-    "user1": "password1",
-    "user2": "password2"
-}
+users = {"user1": "password1", "user2": "password2"}
 
-app  = Flask(__name__)
+app = Flask(__name__)
 auth = HTTPBasicAuth()
 
-app.config["SWAGGER"] = {
-    "title": "API Vitivinicultura Embrapa", 
-    "uiversion": 3
-}
+app.config["SWAGGER"] = {"title": "API Vitivinicultura Embrapa", "uiversion": 3}
 
-swagger_template = {
-    "securityDefinitions": {
-        "basicAuth": {
-            "type": "basic"
-        }
-    }
-}
+swagger_template = {"securityDefinitions": {"basicAuth": {"type": "basic"}}}
 
 swagger = Swagger(app, template=swagger_template)
 
@@ -32,12 +20,14 @@ def verify_password(username, password):
     if username in users and users[username] == password:
         return username
 
-@app.route('/')
+
+@app.route("/")
 @auth.login_required
 def home():
     return "API Vitivinicultura Embrapa"
 
-@app.route('/producao', methods=["GET"])
+
+@app.route("/producao", methods=["GET"])
 def get_producao():
     """
     Extract production table
@@ -73,11 +63,12 @@ def get_producao():
                       type: string
                     Quantidade (L.):
                       type: number
-    """     
+    """
     ano = request.args.get("ano", default=2023, type=int)
     return jsonify(extrair_tabela("opt_02", ano))
 
-@app.route('/processamento', methods=["GET"])
+
+@app.route("/processamento", methods=["GET"])
 def get_processamento():
     """
     Extract production table
@@ -113,11 +104,12 @@ def get_processamento():
                       type: string
                     Quantidade (L.):
                       type: number
-    """     
+    """
     ano = request.args.get("ano", default=2023, type=int)
     return jsonify(extrair_tabela("opt_03", ano))
 
-@app.route('/comercializacao', methods=["GET"])
+
+@app.route("/comercializacao", methods=["GET"])
 def get_comercializacao():
     """
     Extract comercialization table
@@ -153,11 +145,12 @@ def get_comercializacao():
                       type: string
                     Quantidade (L.):
                       type: number
-    """     
+    """
     ano = request.args.get("ano", default=2023, type=int)
     return jsonify(extrair_tabela("opt_04", ano))
 
-@app.route('/importacao', methods=["GET"])
+
+@app.route("/importacao", methods=["GET"])
 def get_importacao():
     """
     Extract importation table
@@ -193,11 +186,12 @@ def get_importacao():
                       type: string
                     Quantidade (L.):
                       type: number
-    """     
+    """
     ano = request.args.get("ano", default=2023, type=int)
     return jsonify(extrair_tabela("opt_05", ano))
 
-@app.route('/exportacao', methods=["GET"])
+
+@app.route("/exportacao", methods=["GET"])
 def get_exportacao():
     """
     Extract exportation table
@@ -233,7 +227,7 @@ def get_exportacao():
                       type: string
                     Quantidade (L.):
                       type: number
-    """     
+    """
     ano = request.args.get("ano", default=2023, type=int)
     return jsonify(extrair_tabela("opt_06", ano))
 
