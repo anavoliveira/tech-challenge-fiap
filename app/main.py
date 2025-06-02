@@ -32,9 +32,11 @@ def verify_password(credentials: HTTPBasicCredentials = Depends(security)):
 async def home():
   return  f"API Vitivinicultura Embrapa"
 
-@app.get("/hello")
-async def hello(username: str = Depends(verify_password)):
-  return  f"{username}, Bem-vindo a API Vitivinicultura Embrapa"
+
+# @app.get("/hello")
+# async def hello(username: str = Depends(verify_password)):
+#   return  f"{username}, Bem-vindo a API Vitivinicultura Embrapa"
+
 
 @app.get("/producao")
 async def producao(
