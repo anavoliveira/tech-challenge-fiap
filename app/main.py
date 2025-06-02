@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import JSONResponse
 from typing import Optional
-from services.embrapa import extrair_tabela_produto, extrair_tabela_cultivo, extrair_tabela_venda
+from app.services.embrapa import extrair_tabela_produto, extrair_tabela_cultivo, extrair_tabela_venda
 
 app = FastAPI(
   title="API Vitivinicultura Embrapa",

@@ -39,6 +39,6 @@ A API disponibiliza 5 rotas para consulta dos dados de vitivinicultura da Embrap
 
 Pode ser enviado o ano cujos dados devem ser consultados, desde que disponíveis no site.
 
-A API pode ser utilizada para a análise dos dados histórico, para ajudar a prever quanto será importado ou exportado de acordo com a produção e o processamento, assim como a comercialiazação. 
+A API poderá ser utilizada para prever a demanda de importação/exportação de vinho, com base nos dados históricos de produção, comercialização e processamento
 
 Para o depploy, será utilizado o S3 para armazenamento dos dados, um ECS para hospedar da API e o sagemaker para realizar as inferências. 
