@@ -117,3 +117,4 @@ A arquitetura do projeto foi desenhada utilizando serviços da AWS:
 O MVP da API está disponível em:
 
 🔗 [https://tech-challenger.onrender.com](https://tech-challenger.onrender.com)
+⚠️ *Observação:* O Render pode levar alguns segundos para iniciar a API após períodos de inatividade, especialmente no plano gratuito. Aguarde o carregamento na primeira requisição.
