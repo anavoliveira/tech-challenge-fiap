@@ -1,5 +1,16 @@
-.venv
-/app/services/__pycache__/
-/app/routes/__pycache__/
-/app/auth/__pycache__/
-/app/__pycache__/
+# Ambientes virtuais
+.venv/
+venv/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+**/__pycache__/
+
+# Configs do VSCode (se estiver usando)
+.vscode/
+
+# Arquivos temporários
+*.log
+*.tmp
+.DS_Store
